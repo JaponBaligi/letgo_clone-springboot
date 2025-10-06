@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:fragment="html">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">Takı Kazan</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        :root {
+            --letgo-primary: #00d4aa;
+            --letgo-secondary: #ff6b35;
+            --letgo-dark: #2c3e50;
+            --letgo-light: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .navbar-brand img {
+            height: 40px;
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 50px 12px 20px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .search-input:focus {
+            border-color: var(--letgo-primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 212, 170, 0.25);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--letgo-primary);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .location-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: var(--letgo-dark);
+            font-size: 14px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+            color: var(--letgo-primary);
+            margin-bottom: 10px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-price {
+            color: var(--letgo-primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .btn-primary {
+            background-color: var(--letgo-primary);
+            border-color: var(--letgo-primary);
+        }
+
+        .btn-primary:hover {
+            background-color: #00b894;
+            border-color: #00b894;
+        }
+
+        .footer {
+            background-color: var(--letgo-dark);
+            color: white;
+            padding: 40px 0;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--letgo-primary), var(--letgo-secondary));
+            color: white;
+            padding: 60px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <h3 style="color: #00d4aa; font-weight: bold; margin: 0;">Takı Kazan</h3>
+            </a>
+
+            <div class="search-container d-none d-lg-block flex-grow-1 mx-4">
+                <form action="/search" method="get">
+                    <div class="input-group" style="max-width: 600px;">
+                        <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="q" class="form-control border-start-0"
+                            placeholder="Ürün, marka, kategori, satıcı ara"
+                            style="border-radius: 0 8px 8px 0; border-color: #e0e0e0;">
+                    </div>
+                </form>
+            </div>
+
+            <div class="d-flex align-items-center">
+                <button class="btn btn-outline-secondary me-2"
+                    style="border-radius: 20px; padding: 8px 16px; border-color: #e0e0e0;">
+                    <i class="fas fa-map-marker-alt me-1"></i>
+                    İstanbul, Türkiye
+                </button>
+                <button id="authButton" class="btn btn-outline-primary me-2"
+                    style="border-radius: 20px; padding: 8px 16px;" onclick="toggleAuthModal()">Giriş</button>
+                <a href="/ilan-ver" class="btn btn-primary me-2" style="border-radius: 20px; padding: 8px 16px;">Sat</a>
+                <button id="logoutButton" class="btn btn-outline-danger"
+                    style="border-radius: 20px; padding: 8px 16px; display: none;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt me-1"></i>Çıkış
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main th:replace="~{::content}">
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Takı Kazan</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Hakkımızda</a></li>
+                        <li><a href="#" class="text-light">Kariyer</a></li>
+                        <li><a href="#" class="text-light">Basın</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Yardım</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Güvenlik</a></li>
+                        <li><a href="#" class="text-light">İletişim</a></li>
+                        <li><a href="#" class="text-light">SSS</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Yasal</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-light">Kullanım Şartları</a></li>
+                        <li><a href="#" class="text-light">Gizlilik Politikası</a></li>
+                        <li><a href="#" class="text-light">Çerez Politikası</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>İletişim</h5>
+                    <div class="d-flex">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="my-4">
+            <div class="text-center">
+                <p>&copy; 2024 Takı Kazan. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Giriş Yap</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginModalForm">
+                        <div class="mb-3">
+                            <label class="form-label">Kullanıcı Adı</label>
+                            <input type="text" class="form-control" id="modalUsername" name="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Şifre</label>
+                            <input type="password" class="form-control" id="modalPassword" name="password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="modalRememberMe">
+                            <label class="form-check-label" for="modalRememberMe">Beni Hatırla</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Giriş Yap</button>
+                    </form>
+                    <hr>
+                    <div class="text-center">
+                        <p class="mb-0">Hesabın yok mu? <a href="/register" class="text-primary">Kayıt Ol</a></p>
+                    </div>
+                    <div class="text-center mt-3">
+                        <h6 class="text-muted mb-2">Demo Hesap</h6>
+                        <p class="small text-muted mb-1">Kullanıcı Adı: <strong>demo</strong></p>
+                        <p class="small text-muted">Şifre: <strong>demo123</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/script.js}"></script>
+
+    <script th:if="${title != null and title.contains('Sepetim')}">
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity < 1) {
+                removeFromCart(productId);
+                return;
+            }
+
+            fetch('/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `productId=${productId}&quantity=${newQuantity}`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        location.reload();
+                    } else {
+                        showNotification('Bir hata oluştu!', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Bir hata oluştu!', 'error');
+                });
+        }
+
+        function removeFromCart(productId) {
+            if (confirm('Bu ürünü sepetten kaldırmak istediğinizden emin misiniz?')) {
+                fetch('/cart/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `productId=${productId}`
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            location.reload();
+                        } else {
+                            showNotification('Bir hata oluştu!', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Bir hata oluştu!', 'error');
+                    });
+            }
+        }
+
+        function clearCart() {
+            if (confirm('Sepeti tamamen temizlemek istediğinizden emin misiniz?')) {
+                fetch('/cart/clear', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        if (data === 'success') {
+                            showNotification('Sepet temizlendi!', 'success');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            showNotification('Bir hata oluştu!', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Bir hata oluştu!', 'error');
+                    });
+            }
+        }
+    </script>
+
+    <script>
+        // Check authentication status on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            checkAuthStatus();
+        });
+
+        function checkAuthStatus() {
+            // Check with the server for actual session status
+            fetch('/auth/status')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.loggedIn && data.username) {
+                        updateNavigationForLoggedInUser(data.username);
+                    } else {
+                        updateNavigationForLoggedOutUser();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking auth status:', error);
+                    updateNavigationForLoggedOutUser();
+                });
+        }
+
+        function updateNavigationForLoggedInUser(username) {
+            const authButton = document.getElementById('authButton');
+            const logoutButton = document.getElementById('logoutButton');
+
+            // Update auth button to show cart
+            authButton.innerHTML = `<i class="fas fa-shopping-cart me-1"></i>Sepetim`;
+            authButton.onclick = function () { window.location.href = '/cart'; };
+            authButton.className = 'btn btn-primary me-2';
+            authButton.style.cssText = 'border-radius: 20px; padding: 8px 16px;';
+
+            // Show logout button
+            logoutButton.style.display = 'inline-block';
+        }
+
+        function updateNavigationForLoggedOutUser() {
+            const authButton = document.getElementById('authButton');
+            const logoutButton = document.getElementById('logoutButton');
+
+            // Reset auth button to show login
+            authButton.innerHTML = 'Giriş';
+            authButton.onclick = function () { toggleAuthModal(); };
+            authButton.className = 'btn btn-outline-primary me-2';
+            authButton.style.cssText = 'border-radius: 20px; padding: 8px 16px;';
+
+            // Hide logout button
+            logoutButton.style.display = 'none';
+        }
+
+        function toggleAuthModal() {
+            const modal = new bootstrap.Modal(document.getElementById('loginModal'));
+            modal.show();
+        }
+
+        function logout() {
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        // Update navigation by checking server status
+                        checkAuthStatus();
+
+                        // Show success message
+                        showNotification('Başarıyla çıkış yapıldı!', 'success');
+
+                        // Redirect to home page
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    } else {
+                        showNotification('Çıkış yapılırken bir hata oluştu!', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Çıkış yapılırken bir hata oluştu!', 'error');
+                });
+        }
+
+        // Handle login form submission
+        document.getElementById('loginModalForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const username = document.getElementById('modalUsername').value;
+            const password = document.getElementById('modalPassword').value;
+
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        // Update navigation by checking server status
+                        checkAuthStatus();
+
+                        // Close modal
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+                        modal.hide();
+
+                        // Show success message
+                        showNotification('Giriş başarılı!', 'success');
+                    } else {
+                        showNotification('Kullanıcı adı veya şifre hatalı!', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Bir hata oluştu!', 'error');
+                });
+        });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : 'error'} alert-dismissible fade show`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+            `;
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

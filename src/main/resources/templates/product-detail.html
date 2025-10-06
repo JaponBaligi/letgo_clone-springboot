@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html}">
+
+<head>
+    <title th:text="${title}">Ürün Detayı - Takı Kazan Clone</title>
+</head>
+
+<body>
+    <main th:fragment="content">
+        <section class="py-2 bg-light">
+            <div class="container">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="/">Anasayfa</a></li>
+                        <li class="breadcrumb-item" th:text="${product.category}">Kategori</li>
+                        <li class="breadcrumb-item active" th:text="${product.title}">Ürün</li>
+                    </ol>
+                </nav>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="product-images">
+                            <div class="main-image mb-3">
+                                <img th:src="${product.imageUrl}" th:alt="${product.title}" class="img-fluid rounded"
+                                    style="width: 100%; height: 400px; object-fit: cover;">
+                            </div>
+                            <div class="thumbnail-images d-flex gap-2">
+                                <img th:src="${product.imageUrl}" th:alt="${product.title}" class="img-thumbnail"
+                                    style="width: 80px; height: 80px; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="product-info">
+                            <h1 class="h3 mb-3" th:text="${product.title}">Product Title</h1>
+
+                            <div class="price-section mb-4">
+                                <h2 class="product-price mb-2"
+                                    th:text="'₺' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">₺0
+                                </h2>
+                                <p class="text-muted mb-0">
+                                    <i class="fas fa-map-marker-alt me-1"></i>
+                                    <span th:text="${product.location}">Location</span>
+                                </p>
+                            </div>
+
+                            <div class="product-actions mb-4">
+                                <button class="btn btn-primary btn-lg me-2" onclick="addToCart()">
+                                    <i class="fas fa-shopping-cart me-2"></i>Sepete Ekle
+                                </button>
+                                <button class="btn btn-outline-secondary btn-lg">
+                                    <i class="fas fa-heart me-2"></i>Favorilere Ekle
+                                </button>
+                            </div>
+
+                            <div class="product-details">
+                                <h5 class="mb-3">İlan Özellikleri</h5>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <p class="mb-2"><strong>Kategori:</strong> <span
+                                                th:text="${product.category}">Category</span></p>
+                                        <p class="mb-2"><strong>Durum:</strong> <span
+                                                th:text="${product.condition}">Condition</span></p>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="mb-2"><strong>İlan Tarihi:</strong> <span
+                                                th:text="${#temporals.format(product.createdAt, 'dd MMM yyyy')}">Date</span>
+                                        </p>
+                                        <p class="mb-2"><strong>Konum:</strong> <span
+                                                th:text="${product.location}">Location</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">İlan Açıklaması</h5>
+                            </div>
+                            <div class="card-body">
+                                <p th:text="${product.description}">Product description goes here...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="d-flex align-items-center">
+                                            <div class="seller-avatar me-3">
+                                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                                    style="width: 60px; height: 60px;">
+                                                    <i class="fas fa-user fa-2x"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-1">Satıcı</h6>
+                                                <p class="text-muted mb-0">Takı Kazan üyesi</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 text-end">
+                                        <button class="btn btn-outline-primary">
+                                            <i class="fas fa-comment me-2"></i>Mesaj Gönder
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-5" th:if="${relatedProducts != null and !relatedProducts.empty}">
+                    <div class="col-12">
+                        <h4 class="mb-4">Benzer Ürünler</h4>
+                        <div class="row g-4">
+                            <div th:each="relatedProduct : ${relatedProducts}" class="col-lg-3 col-md-6"
+                                th:if="${relatedProduct.id != product.id}">
+                                <div class="product-card">
+                                    <a th:href="@{/product/{id}(id=${relatedProduct.id})}">
+                                        <img th:src="${relatedProduct.imageUrl}" th:alt="${relatedProduct.title}"
+                                            class="product-image">
+                                    </a>
+                                    <div class="p-3">
+                                        <h6 class="mb-2">
+                                            <a th:href="@{/product/{id}(id=${relatedProduct.id})}"
+                                                th:text="${relatedProduct.title}"
+                                                class="text-decoration-none text-dark">Product Title</a>
+                                        </h6>
+                                        <p class="product-price mb-2"
+                                            th:text="'₺' + ${#numbers.formatDecimal(relatedProduct.price, 0, 'COMMA', 0, 'POINT')}">
+                                            ₺0</p>
+                                        <small class="text-muted" th:text="${relatedProduct.location}">Location</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function addToCart() {
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `productId=${/*[[${product.id}]]*/ 1}&quantity=1`
+            })
+                .then(response => response.text())
+                .then(data => {
+                    if (data === 'success') {
+                        showNotification('Ürün sepete eklendi!', 'success');
+                    } else if (data === 'not_logged_in') {
+                        showNotification('Sepete eklemek için giriş yapmalısınız!', 'warning');
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 2000);
+                    } else {
+                        showNotification('Bir hata oluştu!', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Bir hata oluştu!', 'error');
+                });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'danger'} alert-dismissible fade show`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                min-width: 300px;
+            `;
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

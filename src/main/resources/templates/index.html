@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html}">
+
+<head>
+    <title th:text="${title}">Takı Kazan Clone</title>
+</head>
+
+<body>
+    <div th:fragment="content">
+        <section class="hero-section">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 fw-bold mb-4">İkinci El Eşyalarını Sat, Yeni Fırsatlar Keşfet</h1>
+                        <p class="lead mb-4">Türkiye'nin en büyük ikinci el pazarında alışveriş yap ve satış yap.
+                            Binlerce ürün, güvenli alışveriş.</p>
+                        <div class="d-flex gap-3">
+                            <a href="/ilan-ver" class="btn btn-light btn-lg">Ücretsiz İlan Ver</a>
+                            <a href="/search" class="btn btn-outline-light btn-lg">Ürünleri Keşfet</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://via.placeholder.com/600x400/ffffff/00d4aa?text=Takı+Kazan+App"
+                            class="img-fluid rounded" alt="Takı Kazan App">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-4 bg-white">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="search-container">
+                            <form action="/search" method="get">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                    <input type="text" name="q" class="form-control border-start-0"
+                                        placeholder="Ürün, marka, kategori, satıcı ara">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Popüler Kategoriler</h2>
+                <div class="row g-4">
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <h6>Telefon & Tablet</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-laptop"></i>
+                            </div>
+                            <h6>Bilgisayar</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-car"></i>
+                            </div>
+                            <h6>Otomobil</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <h6>Ev & Bahçe</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-tshirt"></i>
+                            </div>
+                            <h6>Moda & Giyim</h6>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4 col-sm-6">
+                        <div class="category-card">
+                            <div class="category-icon">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <h6>Oyun & Hobi</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5 bg-white">
+            <div class="container">
+                <h2 class="text-center mb-5">Öne Çıkan Ürünler</h2>
+                <p class="text-center text-muted">Toplam ürün sayısı: <span
+                        th:text="${featuredProducts != null ? featuredProducts.size() : 0}">0</span></p>
+                <div class="row g-4">
+                    <div th:if="${featuredProducts == null or featuredProducts.isEmpty()}" class="col-12">
+                        <div class="text-center py-5">
+                            <h4 class="text-muted">Henüz ürün bulunmuyor</h4>
+                            <p class="text-muted">Yakında harika ürünler eklenecek!</p>
+                        </div>
+                    </div>
+                    <div th:each="product : ${featuredProducts}" class="col-lg-3 col-md-6">
+                        <div class="product-card">
+                            <a th:href="@{/product/{id}(id=${product.id})}">
+                                <img th:src="${product.imageUrl}" th:alt="${product.title}" class="product-image">
+                            </a>
+                            <div class="p-3">
+                                <h6 class="mb-2">
+                                    <a th:href="@{/product/{id}(id=${product.id})}" th:text="${product.title}"
+                                        class="text-decoration-none text-dark">Product Title</a>
+                                </h6>
+                                <p class="product-price mb-2"
+                                    th:text="'₺' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">₺0
+                                </p>
+                                <small class="text-muted" th:text="${product.location}">Location</small>
+                                <div class="mt-2">
+                                    <button class="btn btn-primary btn-sm w-100"
+                                        th:onclick="'addToCart(' + ${product.id} + ')'">
+                                        <i class="fas fa-shopping-cart me-1"></i>Sepete Ekle
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <a href="/search" class="btn btn-primary btn-lg">Daha Fazla Ürün Gör</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Nasıl Çalışır?</h2>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-camera fa-2x"></i>
+                            </div>
+                            <h5>1. Fotoğraf Çek</h5>
+                            <p>Ürününün fotoğrafını çek ve detaylarını ekle</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-upload fa-2x"></i>
+                            </div>
+                            <h5>2. İlan Ver</h5>
+                            <p>Ücretsiz olarak ilanını yayınla</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-handshake fa-2x"></i>
+                            </div>
+                            <h5>3. Satış Yap</h5>
+                            <p>Alıcılarla iletişime geç ve satış yap</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5 bg-primary text-white">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h3 class="display-4 fw-bold">2M+</h3>
+                        <p>Aktif Kullanıcı</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h3 class="display-4 fw-bold">500K+</h3>
+                        <p>Aktif İlan</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h3 class="display-4 fw-bold">81</h3>
+                        <p>İl</p>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h3 class="display-4 fw-bold">1000+</h3>
+                        <p>Kategori</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5 bg-white">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h2 class="mb-4">Takı Kazan Uygulamasını İndir</h2>
+                        <p class="lead mb-4">Mobil uygulamamızla her yerden alışveriş yap ve satış yap. iOS ve Android
+                            cihazlarında ücretsiz.</p>
+                        <div class="d-flex gap-3">
+                            <a href="#" class="btn btn-dark btn-lg">
+                                <i class="fab fa-apple me-2"></i>
+                                App Store
+                            </a>
+                            <a href="#" class="btn btn-dark btn-lg">
+                                <i class="fab fa-google-play me-2"></i>
+                                Google Play
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://via.placeholder.com/500x400/00d4aa/ffffff?text=Mobile+App" class="img-fluid"
+                            alt="Mobile App">
+                    </div>
+                </div>
+            </div>
+        </section>
+        </main>
+
+    </div>
+</body>
+
+</html>

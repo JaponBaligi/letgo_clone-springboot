@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html}">
+
+<head>
+    <title th:text="${title}">Ödeme - Takı Kazan Clone</title>
+</head>
+
+<body>
+    <main th:fragment="content">
+        <section class="py-4 bg-white border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <h2 class="mb-0">Ödeme</h2>
+                        <p class="text-muted" th:text="'Toplam ' + ${cartItemCount} + ' ürün'">Toplam 0 ürün</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Ödeme Bilgileri</h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${savedCheckoutInfos != null and !savedCheckoutInfos.empty}" class="mb-4">
+                                    <label for="savedCheckoutInfo" class="form-label">Kayıtlı Ödeme Bilgileri</label>
+                                    <select class="form-select" id="savedCheckoutInfo"
+                                        onchange="loadSavedCheckoutInfo()">
+                                        <option value="">Yeni ödeme bilgisi ekle</option>
+                                        <option th:each="info : ${savedCheckoutInfos}" th:value="${info.id}"
+                                            th:text="${info.fullName + ' - ' + info.maskedCardNumber}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <form id="checkoutForm">
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="fullName" class="form-label">Ad Soyad *</label>
+                                            <input type="text" class="form-control" id="fullName" name="fullName"
+                                                th:value="${defaultCheckoutInfo?.fullName}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="email" class="form-label">E-posta *</label>
+                                            <input type="email" class="form-control" id="email" name="email"
+                                                th:value="${defaultCheckoutInfo?.email ?: user?.email}" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="phoneNumber" class="form-label">Telefon Numarası *</label>
+                                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber"
+                                                th:value="${defaultCheckoutInfo?.phoneNumber}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" id="saveInfo"
+                                                    name="saveInfo">
+                                                <label class="form-check-label" for="saveInfo">
+                                                    Bu bilgileri kaydet
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <h6 class="mb-3">Teslimat Adresi</h6>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="address" class="form-label">Adres *</label>
+                                            <textarea class="form-control" id="address" name="address" rows="3"
+                                                th:text="${defaultCheckoutInfo?.address}" required></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="city" class="form-label">Şehir *</label>
+                                            <input type="text" class="form-control" id="city" name="city"
+                                                th:value="${defaultCheckoutInfo?.city}" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="postalCode" class="form-label">Posta Kodu *</label>
+                                            <input type="text" class="form-control" id="postalCode" name="postalCode"
+                                                th:value="${defaultCheckoutInfo?.postalCode}" required>
+                                        </div>
+                                    </div>
+
+                                    <h6 class="mb-3">Ödeme Bilgileri</h6>
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label for="cardNumber" class="form-label">Kart Numarası *</label>
+                                            <input type="text" class="form-control" id="cardNumber" name="cardNumber"
+                                                th:value="${defaultCheckoutInfo?.cardNumber}"
+                                                placeholder="1234 5678 9012 3456" maxlength="19" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="cardHolderName" class="form-label">Kart Üzerindeki İsim
+                                                *</label>
+                                            <input type="text" class="form-control" id="cardHolderName"
+                                                name="cardHolderName" th:value="${defaultCheckoutInfo?.cardHolderName}"
+                                                required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="expiryMonth" class="form-label">Ay *</label>
+                                            <select class="form-select" id="expiryMonth" name="expiryMonth" required>
+                                                <option value="">Ay</option>
+                                                <option th:each="month : ${#numbers.sequence(1,12)}"
+                                                    th:value="${#numbers.formatInteger(month, 2)}"
+                                                    th:text="${#numbers.formatInteger(month, 2)}"
+                                                    th:selected="${defaultCheckoutInfo?.expiryMonth == #numbers.formatInteger(month, 2)}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="expiryYear" class="form-label">Yıl *</label>
+                                            <select class="form-select" id="expiryYear" name="expiryYear" required>
+                                                <option value="">Yıl</option>
+                                                <option
+                                                    th:each="year : ${#numbers.sequence(#dates.year(#dates.createNow()), #dates.year(#dates.createNow()) + 10)}"
+                                                    th:value="${year}" th:text="${year}"
+                                                    th:selected="${defaultCheckoutInfo?.expiryYear == year}">
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mb-3">
+                                        <div class="col-md-6">
+                                            <label for="cvv" class="form-label">CVV *</label>
+                                            <input type="text" class="form-control" id="cvv" name="cvv"
+                                                th:value="${defaultCheckoutInfo?.cvv}" placeholder="123" maxlength="4"
+                                                required>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">Sipariş Özeti</h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:each="item : ${cartItems}"
+                                    class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0" th:text="${item.product.title}">Product Title</h6>
+                                        <small class="text-muted" th:text="'Adet: ' + ${item.quantity}">Adet: 1</small>
+                                    </div>
+                                    <span class="product-price"
+                                        th:text="'₺' + ${#numbers.formatDecimal(item.totalPrice, 0, 'COMMA', 0, 'POINT')}">
+                                        ₺0
+                                    </span>
+                                </div>
+
+                                <hr>
+
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Ürünler:</span>
+                                    <span
+                                        th:text="'₺' + ${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')}">₺0</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Kargo:</span>
+                                    <span class="text-success">Ücretsiz</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between mb-3">
+                                    <strong>Toplam:</strong>
+                                    <strong class="product-price"
+                                        th:text="'₺' + ${#numbers.formatDecimal(cartTotal, 0, 'COMMA', 0, 'POINT')}">₺0</strong>
+                                </div>
+
+                                <button class="btn btn-primary w-100 mb-2" onclick="processCheckout()">
+                                    <i class="fas fa-credit-card me-2"></i>Satın Al
+                                </button>
+
+                                <a href="/cart" class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-arrow-left me-2"></i>Sepete Dön
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="successModalLabel">
+                            <i class="fas fa-check-circle me-2"></i>Satın Alım Başarılı!
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-check-circle fa-4x text-success"></i>
+                        </div>
+                        <h4 class="text-success mb-3">Satın alımınız başarıyla gerçekleşti!</h4>
+                        <p class="mb-2">Fiş ID:</p>
+                        <h5 class="text-primary" id="receiptId">-</h5>
+                        <p class="text-muted mt-3">Siparişiniz en kısa sürede kargoya verilecektir.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                            onclick="window.location.href='/'">
+                            <i class="fas fa-home me-2"></i>Ana Sayfaya Dön
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
+</html>

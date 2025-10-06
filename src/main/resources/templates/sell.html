@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html}">
+
+<head>
+    <title th:text="${title}">İlan Ver - Takı Kazan Clone</title>
+</head>
+
+<body>
+    <main th:fragment="content">
+        <section class="hero-section">
+            <div class="container">
+                <div class="row justify-content-center text-center">
+                    <div class="col-lg-8">
+                        <h1 class="display-4 fw-bold mb-4">Ürününü Sat</h1>
+                        <p class="lead mb-4">Takı Kazan'da ürününü ücretsiz ilan ver ve hızlıca sat. Binlerce alıcı seni
+                            bekliyor!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5 bg-white">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-body p-5">
+                                <h3 class="text-center mb-4">İlan Bilgileri</h3>
+                                <form>
+                                    <div class="mb-4">
+                                        <label class="form-label">Ürün Fotoğrafları</label>
+                                        <div class="border rounded p-4 text-center"
+                                            style="border-style: dashed !important;">
+                                            <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                            <p class="text-muted">Fotoğrafları buraya sürükleyin veya tıklayarak seçin
+                                            </p>
+                                            <input type="file" class="form-control" multiple accept="image/*">
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Ürün Başlığı</label>
+                                        <input type="text" class="form-control"
+                                            placeholder="Örn: iPhone 13 Pro Max 256GB">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Kategori</label>
+                                        <select class="form-select">
+                                            <option>Kategori Seçin</option>
+                                            <option>Telefon & Tablet</option>
+                                            <option>Bilgisayar</option>
+                                            <option>Otomobil</option>
+                                            <option>Ev & Bahçe</option>
+                                            <option>Moda & Giyim</option>
+                                            <option>Oyun & Hobi</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Fiyat (₺)</label>
+                                        <input type="number" class="form-control" placeholder="0">
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Durum</label>
+                                        <select class="form-select">
+                                            <option>Sıfır</option>
+                                            <option>İkinci El</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Açıklama</label>
+                                        <textarea class="form-control" rows="4"
+                                            placeholder="Ürün hakkında detaylı bilgi verin..."></textarea>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Konum</label>
+                                        <input type="text" class="form-control" placeholder="İstanbul, Kadıköy">
+                                    </div>
+
+                                    <div class="text-center">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">İlanı Yayınla</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Nasıl Çalışır?</h2>
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-camera fa-2x"></i>
+                            </div>
+                            <h5>1. Fotoğraf Çek</h5>
+                            <p>Ürününün fotoğrafını çek ve detaylarını ekle</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-upload fa-2x"></i>
+                            </div>
+                            <h5>2. İlan Ver</h5>
+                            <p>Ücretsiz olarak ilanını yayınla</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                                style="width: 80px; height: 80px;">
+                                <i class="fas fa-handshake fa-2x"></i>
+                            </div>
+                            <h5>3. Satış Yap</h5>
+                            <p>Alıcılarla iletişime geç ve satış yap</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>

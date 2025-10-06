@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html}">
+
+<head>
+    <title th:text="${title}">Arama Sonuçları - Takı Kazan Clone</title>
+</head>
+
+<body>
+    <main th:fragment="content">
+        <section class="py-4 bg-white border-bottom">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <h4 th:if="${searchQuery}" th:text="'Arama Sonuçları: ' + ${searchQuery}">Arama Sonuçları</h4>
+                        <h4 th:unless="${searchQuery}">Tüm Ürünler</h4>
+                        <p class="text-muted" th:text="'Toplam ' + ${resultCount} + ' ürün bulundu'">Toplam 0 ürün
+                            bulundu</p>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-flex gap-2">
+                            <select class="form-select">
+                                <option>Fiyat (Düşükten Yükseğe)</option>
+                                <option>Fiyat (Yüksekten Düşüğe)</option>
+                                <option>En Yeni</option>
+                                <option>En Eski</option>
+                            </select>
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-filter"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-4">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Filtreler</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h6>Fiyat Aralığı</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" placeholder="Min" value="0">
+                                        </div>
+                                        <div class="col-6">
+                                            <input type="number" class="form-control" placeholder="Max" value="100000">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6>Konum</h6>
+                                    <select class="form-select">
+                                        <option>Tüm Türkiye</option>
+                                        <option>İstanbul</option>
+                                        <option>Ankara</option>
+                                        <option>İzmir</option>
+                                        <option>Bursa</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6>Kategori</h6>
+                                    <div th:each="category, iterStat : ${categories}" class="form-check">
+                                        <input class="form-check-input" type="checkbox"
+                                            th:id="'cat' + ${iterStat.index}">
+                                        <label class="form-check-label" th:for="'cat' + ${iterStat.index}"
+                                            th:text="${category}">Category</label>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h6>Durum</h6>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cond1">
+                                        <label class="form-check-label" for="cond1">Sıfır</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="cond2">
+                                        <label class="form-check-label" for="cond2">İkinci El</label>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary w-100">Filtreleri Uygula</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-9">
+                        <div class="row g-4">
+                            <div th:each="product : ${searchResults}" class="col-lg-4 col-md-6">
+                                <div class="product-card">
+                                    <img th:src="${product.imageUrl}" th:alt="${product.title}" class="product-image">
+                                    <div class="p-3">
+                                        <h6 class="mb-2" th:text="${product.title}">Product Title</h6>
+                                        <p class="product-price mb-2"
+                                            th:text="'₺' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">
+                                            ₺0</p>
+                                        <small class="text-muted" th:text="${product.location}">Location</small>
+                                        <div class="mt-2">
+                                            <small class="text-muted" th:text="${product.category}">Category</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <nav aria-label="Page navigation" class="mt-5">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1">Önceki</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Sonraki</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+
+</html>
